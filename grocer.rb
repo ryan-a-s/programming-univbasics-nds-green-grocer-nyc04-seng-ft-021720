@@ -37,6 +37,7 @@ end
 
 def apply_coupons(cart, coupons)
   counter = 0
+  # doesn't break if there is no coupon
   while counter < coupons.length
     # check coupons to see if it matches any of our cart items
     cart_item = find_item_by_name_in_collection(coupons[counter][:item], cart)
@@ -44,18 +45,25 @@ def apply_coupons(cart, coupons)
     couponed_item_name = "#{coupons[counter][:item]} W/COUPON"
     cart_item_with_coupon = find_item_by_name_in_collection(couponed_item_name, cart)
     # checks if the item is in the cart and that the count satisfies the coupon reqs
+    # doesn't break if the coupon doesn't apply to any items
     if cart_item && cart_item[:count] >= coupons[counter][:num]
+      # can apply multiple coupons
       if cart_item_with_coupon
         cart_item_with_coupon[:count] += coupons[counter][:num]
         cart_item[:count] -= coupons[count][:num]
       else
+        # adds the coupon price to the property hash of couponed item
         cart_item_with_coupon = {
           :item => couponed_item_name,
+          # adds the coupon price to the property hash of couponed item
           :price => coupons[counter][:cost] / coupons[counter][:num],
+          # adds the count number to the property hash of couponed item
           :count => coupons[counter][:num],
+          # remembers if the item was on clearance
           :clearance => cart_item[:clearance]
         }
         cart << cart_item_with_coupon
+        # removes the number of discounted items from the original item's count
         cart_item[:count] -= coupons[counter][:num]
         end
       end
@@ -65,9 +73,7 @@ def apply_coupons(cart, coupons)
 end
 
 def apply_clearance(cart)
-  # Consult README for inputs and outputs
-  #
-  # REMEMBER: This method **should** update cart
+  
 end
 
 def checkout(cart, coupons)
