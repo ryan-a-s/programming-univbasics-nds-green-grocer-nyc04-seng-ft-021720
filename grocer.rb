@@ -30,9 +30,34 @@ def consolidate_cart(cart)
     new_cart
 end
 
+# apply_coupons notes
+# take the most logical approach to this
+# what do we want to loop though? the cart and apply coupons? or the
+# coupon array and see if it matches items in the cart?
+
 def apply_coupons(cart, coupons)
-  pp cart
-  pp coupons
+  counter = 0
+  while counter < coupons.length
+    # check coupons to see if it matches any of our cart items
+    cart_item = find_item_by_name_in_collection(coupons[counter][:item], cart)
+    # does the coupon item exist in the cart? change name to add "W/COUPON"
+    couponed_item_name = "#{coupons[counter][:item]} W/COUPON"
+    cart_item_with_coupon = find_item_by_name_in_collection(couponed_item_name, cart)
+    # checks if the item is in the cart and that the count satisfies the coupon reqs
+    if cart_item && cart_item[:count] >= coupons[counter][:num]
+      if cart_item_with_coupon
+        cart_item_with_coupon[:count] += coupons[counter][:num]
+        cart_item[:count] -= coupons[count][:num]
+      else
+        cart_item_with_coupon = {
+          :item => couponed_item_name,
+          :price => coupons[counter][:cost] / coupons[counter][:num],
+          :count => coupons[counter][:num],
+          :clearance => cart_item[:clearance]
+        }
+      end
+    counter += 1
+  end
 end
 
 def apply_clearance(cart)
